@@ -1,0 +1,22 @@
+{
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "@types/node": "^20.1.0",
+    "eslint-config-salt-typescript": "^1.0.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  },
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc -w",
+    "dev": "ts-node src/app.ts",
+    "dev:watch": "npm run dev -- --watch src/*.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
