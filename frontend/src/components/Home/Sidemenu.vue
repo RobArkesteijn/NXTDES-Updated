@@ -10,7 +10,7 @@
 				<span class="flex flex-row items-center justify-between w-full">
 					<span class="flex flex-row items-center">
 						<i class="fa-solid fa-circle-info text-xl mr-2"></i>
-						<h3 class="text-2xl">Travel Info</h3>
+						<h3 class="text-2xl"><router-link to="/info">Travel Info</router-link></h3>
 					</span>
 					<span class="w-1/2 flex flex-row justify-end">
 						<i class="fa-solid fa-chevron-down transition-all" :class="{'rotate-180': openTravelInfo, 'rotate-0': !openTravelInfo}" @click="openOptions('travelInfo')"></i>
@@ -28,7 +28,7 @@
 				<span class="flex flex-row items-center justify-between w-full">
 					<span class="flex flex-row items-center">
 						<i class="fa-solid fa-earth-americas text-xl mr-2"></i>
-						<h3 class="text-2xl">Countries</h3>
+						<h3 class="text-2xl"><router-link to="/countries">Countries</router-link></h3>
 					</span>
 					<span class="">
 						<i class="fa-solid fa-chevron-down transition-all" :class="{'rotate-180': openCountries, 'rotate-0': !openCountries}" @click="openOptions('countries')"></i>
@@ -37,7 +37,7 @@
 				<ul class="w-full pt-2 pl-4 transition-all" :class="{'h-[50rem] opacity-100 visible': openCountries, 'h-0 z-0 opacity-0 invisible': !openCountries}">
 					<span class="flex items-center pb-1 pt-3" v-for="country in countries" :key="country">
 						<i class="fa-solid fa-minus mr-2 text-xs"></i>
-						<li class="text-xl"><router-link :to="country" @click="isOpenFunction">{{ country }}</router-link></li>
+						<li class="text-xl"><router-link :to="country.toLowerCase()" @click="isOpenFunction">{{ country }}</router-link></li>
 					</span>
 				</ul>
 			</span>
@@ -46,7 +46,7 @@
 				<span class="flex flex-row items-center justify-between w-full">
 					<span class="flex flex-row items-center">
 						<i class="fa-solid fa-plane-departure text-xl mr-2"></i>
-						<h3 class="text-2xl">Upc. Destinations</h3>
+						<h3 class="text-2xl"><router-link to="/destinations">Upc. Destinations</router-link></h3>
 					</span>
 					<span class="">
 						<i class="fa-solid fa-chevron-down transition-all" :class="{'rotate-180': openDestinations, 'rotate-0': !openDestinations}" @click="openOptions('destinations')"></i>
@@ -55,7 +55,7 @@
 				<ul class="w-full pt-2 pl-4 transition-all" :class="{'h-[2.78rem] opacity-100 visible': openDestinations, 'h-0 z-0 opacity-0 invisible': !openDestinations}">
 					<span class="flex items-center pb-1 pt-3" v-for="destination in upcoming" :key="destination">
 						<i class="fa-solid fa-minus mr-2 text-xs"></i>
-						<li class="text-xl"><router-link :to="destination" @click="isOpenFunction">{{ destination }}</router-link></li>
+						<li class="text-xl"><router-link :to="destination.toLowerCase()" @click="isOpenFunction">{{ destination }}</router-link></li>
 					</span>
 				</ul>
 			</span>
@@ -70,7 +70,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { db } from '../../main';
+import { db, sortArrayAlphabetically } from '../../main';
 import { get, ref } from 'firebase/database';
 
 interface Data{
@@ -122,7 +122,7 @@ export default defineComponent({
         .then((snapshot) => {
           if (snapshot.exists()) {
             const data: Data = snapshot.val();
-            const countries: string[] = Object.values(data);
+            const countries: string[] = sortArrayAlphabetically(Object.values(data));
             this.countries = countries;
             return countries;
           } else {
@@ -141,7 +141,7 @@ export default defineComponent({
         .then((snapshot) => {
           if (snapshot.exists()) {
             const data: Data = snapshot.val();
-            const travelinfo: string[] = Object.values(data);
+            const travelinfo: string[] = sortArrayAlphabetically(Object.values(data));
             this.travelinfo = travelinfo;
             return travelinfo;
           } else {
@@ -160,7 +160,7 @@ export default defineComponent({
         .then((snapshot) => {
           if (snapshot.exists()) {
             const data: Data = snapshot.val();
-            const upcoming: string[] = Object.values(data);
+            const upcoming: string[] = sortArrayAlphabetically(Object.values(data));
             this.upcoming = upcoming;
             return upcoming;
           } else {
@@ -173,7 +173,7 @@ export default defineComponent({
           return [];
         });
     }
-	}
+	},
 })
 </script>
 

@@ -1,17 +1,17 @@
 <template>
   <div class="w-full h-1/10 bg-custom-blue-500 flex items-center text-zinc-100 border-solid border-zinc-50 border-b-2">
     <span class="w-1/4 flex items-center justify-center">
-      <i class="fa-solid fa-bars text-3xl" @click="isOpenFunction"></i>
+      <i class="fa-solid fa-bars text-3xl cursor-pointer" @click="isOpenFunction"></i>
     </span>
     <span class="w-1/2 flex items-center justify-center">
-      <h1 class=" text-4xl font-logo">NXTDES</h1>
+      <h1 class=" text-4xl font-logo cursor-pointer"><router-link to="/home">NXTDES</router-link></h1>
     </span>
     <span class="w-1/4 flex flex-col items-center justify-center">
-      <img v-if="profilePic" :src="profilePic" alt="Profile picture" @click="openUserMenu" class="rounded-full h-11 w-auto border-solid border-2 border-zinc-50">
-      <i v-else class="fa-regular fa-circle-user text-3xl" @click="openUserMenu"></i>
+      <img v-if="profilePic" :src="profilePic" alt="Profile picture" @click="openUserMenu" class="rounded-full h-11 w-auto border-solid border-2 border-zinc-50 cursor-pointer">
+      <i v-else class="fa-regular fa-circle-user text-3xl cursor-pointer" @click="openUserMenu"></i>
     </span>
   </div>
-  <div :class="{'opacity-0 pointer-events-none': !userInfoOpen, 'opacity-100': userInfoOpen}" class="w-1/4 absolute top-[10vh] right-0 bg-custom-blue-500 min-h-[2.5rem] z-[1] flex justify-center items-center border-solid border-zinc-50 border-x-2 border-b-2 rounded-b transition-all" v-if="auth.currentUser">
+  <div :class="{'opacity-0 pointer-events-none': !userInfoOpen, 'opacity-100': userInfoOpen}" class="w-1/4 absolute top-[10vh)] right-0 bg-custom-blue-500 min-h-[2.5rem] z-[1] flex justify-center items-center border-solid border-zinc-50 border-x-2 border-b-2 rounded-b transition-all" v-if="auth.currentUser">
     <button class="text-zinc-50"><i class="fa-solid fa-right-from-bracket text-xl" @click="handleSignout"></i></button>
   </div>
   <div v-else :class="{'opacity-0': !userInfoOpen, 'opacity-100': userInfoOpen}" class="w-1/4 absolute top-[10vh] right-0 bg-custom-blue-500 min-h-[2.5rem] z-[1] flex justify-center items-center border-solid border-zinc-50 border-x-2 border-b-2 rounded-b transition-all">

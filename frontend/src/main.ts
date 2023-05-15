@@ -6,9 +6,10 @@ import Login from './components/Login/Login.vue';
 import TravelInfo from './components/TravelInfo.vue';
 import Destinations from './components/Destinations.vue';
 import Countries from './components/Countries.vue';
+import Cities from './components/Cities.vue';
 import './assets/tailwind.css'
 import { initializeApp } from "firebase/app";
-import { getDatabase, get, ref } from 'firebase/database';
+import { getDatabase, get, ref as dataRef } from 'firebase/database';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCCZJkv-2SlOrpefwE42iVsnWu2XZeYW5Q",
@@ -22,7 +23,7 @@ const firebaseConfig = {
 };
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getDatabase(firebaseApp);
-export { db };
+export { db, firebaseApp };
 
 const routes = [
   {
@@ -44,10 +45,14 @@ const routes = [
   {
     path: '/destinations',
     component: Destinations
+  },
+  {
+    path: '/cities',
+    component: Cities
   }
 ];
 
-const travelinfoRef = ref(db, 'travelinfo');
+const travelinfoRef = dataRef(db, 'travelinfo');
 get(travelinfoRef)
   .then((snapshot) => {
     const data = snapshot.val();
@@ -65,14 +70,14 @@ get(travelinfoRef)
     return [];
   });
 
-const countriesRef = ref(db, 'countries');
+const countriesRef = dataRef(db, 'countries');
 get(countriesRef)
   .then((snapshot) => {
     const data = snapshot.val();
     const countries: string[] = Object.values(data);
     countries.forEach((country) => {
       routes.push({
-        path: `/${country}`,
+        path: `/${country.toLowerCase()}`,
         component: Countries
       })
     })
@@ -83,15 +88,37 @@ get(countriesRef)
     return [];
   });
 
-const destinationRef = ref(db, 'upcoming');
+const destinationRef = dataRef(db, 'upcoming');
 get(destinationRef)
   .then((snapshot) => {
     const data = snapshot.val();
     const destinations: string[] = Object.values(data);
     destinations.forEach((destination) => {
       routes.push({
-        path: `/${destination}`,
+        path: `/${destination.toLowerCase()}`,
         component: Destinations
+      })
+    })
+    return destinations;
+  })
+  .catch((error) => {
+    console.error('Error fetching data:', error);
+    return [];
+  });
+
+const infoRef = dataRef(db, 'info');
+get(infoRef)
+  .then((snapshot) => {
+    const data = snapshot.val();
+    const countries = Object.keys(data);
+    const cities: any[] = [];
+    countries.forEach((country: string) => {
+      cities.push(...Object.values(data[country].list));
+    });
+    cities.forEach((city: string) => {
+      routes.push({
+        path: `/${city.split(' ').join('_').toLowerCase()}`,
+        component: Cities
       })
     })
     const router = createRouter({
@@ -99,11 +126,15 @@ get(destinationRef)
       routes,
     });
     createApp(App).use(router).mount('#app');
-    return destinations;
+    return cities;
   })
   .catch((error) => {
     console.error('Error fetching data:', error);
     return [];
   });
+
+export function sortArrayAlphabetically(arr: string[]): string[] {
+  return arr.slice().sort((a, b) => a.localeCompare(b));
+}
 
 
