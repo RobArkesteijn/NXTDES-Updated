@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-1/10 bg-custom-blue-500 flex items-center text-zinc-100 border-solid border-zinc-50 border-b-2">
+  <div class="navbar fixed w-full h-1/10 bg-custom-blue-500 flex items-center text-zinc-100 border-solid border-zinc-50 border-b-2 transition-all">
     <span class="w-1/4 flex items-center justify-center">
       <i class="fa-solid fa-bars text-3xl cursor-pointer" @click="isOpenFunction"></i>
     </span>
@@ -11,16 +11,17 @@
       <i v-else class="fa-regular fa-circle-user text-3xl cursor-pointer" @click="openUserMenu"></i>
     </span>
   </div>
-  <div :class="{'opacity-0 pointer-events-none': !userInfoOpen, 'opacity-100': userInfoOpen}" class="w-1/4 absolute top-[10vh)] right-0 bg-custom-blue-500 min-h-[2.5rem] z-[1] flex justify-center items-center border-solid border-zinc-50 border-x-2 border-b-2 rounded-b transition-all" v-if="auth.currentUser">
+  <div :class="{'opacity-0 pointer-events-none': !userInfoOpen, 'opacity-100': userInfoOpen}" class="w-1/4 fixed top-[10vh] right-0 bg-custom-blue-500 min-h-[2.5rem] z-[1] flex justify-center items-center border-solid border-zinc-50 border-x-2 border-b-2 rounded-b transition-all" v-if="auth.currentUser">
     <button class="text-zinc-50"><i class="fa-solid fa-right-from-bracket text-xl" @click="handleSignout"></i></button>
   </div>
-  <div v-else :class="{'opacity-0': !userInfoOpen, 'opacity-100': userInfoOpen}" class="w-1/4 absolute top-[10vh] right-0 bg-custom-blue-500 min-h-[2.5rem] z-[1] flex justify-center items-center border-solid border-zinc-50 border-x-2 border-b-2 rounded-b transition-all">
+  <div v-else :class="{'opacity-0 pointer-events-none': !userInfoOpen, 'opacity-100': userInfoOpen}" class="w-1/4 fixed top-[10vh] right-0 bg-custom-blue-500 min-h-[2.5rem] z-[1] flex justify-center items-center border-solid border-zinc-50 border-x-2 border-b-2 rounded-b transition-all">
     <button class="text-zinc-50"><i class="fa-solid fa-right-to-bracket text-xl" @click="redirectLogin"></i></button>
   </div>
+  <div class="h-[10vh]"></div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent } from 'vue';
 import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'vue-router';
 
@@ -32,6 +33,7 @@ export default defineComponent({
         userInfoOpen: false,
         router: useRouter(),
         profilePic: null as string | null,
+        lastScrollPosition: 0,
     }
   },
   mounted() {
@@ -42,6 +44,7 @@ export default defineComponent({
         this.profilePic = null;
       }
     });
+    window.addEventListener('scroll', this.handleScroll);
   },
   methods: {
     handleSignout() {
@@ -59,6 +62,23 @@ export default defineComponent({
     },
     redirectLogin() {
       this.router.push('/');
+    },
+    handleScroll() {
+      const navbar = document.querySelector('.navbar') as HTMLDivElement;
+      const navbarHeight = navbar.offsetHeight;
+      const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+
+      if (scrollPosition > this.lastScrollPosition && scrollPosition > navbarHeight) {
+        navbar.style.transform = 'translateY(-100%)';
+      } else {
+        navbar.style.transform = 'translateY(0)';
+      }
+
+      if(this.userInfoOpen) {
+        this.userInfoOpen = false;
+      }
+
+      this.lastScrollPosition = scrollPosition;
     },
   }
 })

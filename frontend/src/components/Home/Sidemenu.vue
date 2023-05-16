@@ -4,13 +4,13 @@
 			<h1 v-if="user" class="text-4xl font-bold">{{ `Welcome ${user}` }}</h1>
 			<h1 v-else class="text-4xl font-bold">Welcome Guest</h1>
 		</header>
-		<main class="flex flex-col items-center pb-4">
+		<main class="flex flex-col items-center">
       <!-- Travel Info -->
 			<span class="w-11/12 flex flex-col items-center border-solid border-zinc-100 border-b-1 py-4">
 				<span class="flex flex-row items-center justify-between w-full">
 					<span class="flex flex-row items-center">
 						<i class="fa-solid fa-circle-info text-xl mr-2"></i>
-						<h3 class="text-2xl"><router-link to="/info">Travel Info</router-link></h3>
+						<h3 class="text-2xl">Travel Info</h3>
 					</span>
 					<span class="w-1/2 flex flex-row justify-end">
 						<i class="fa-solid fa-chevron-down transition-all" :class="{'rotate-180': openTravelInfo, 'rotate-0': !openTravelInfo}" @click="openOptions('travelInfo')"></i>
@@ -28,7 +28,7 @@
 				<span class="flex flex-row items-center justify-between w-full">
 					<span class="flex flex-row items-center">
 						<i class="fa-solid fa-earth-americas text-xl mr-2"></i>
-						<h3 class="text-2xl"><router-link to="/countries">Countries</router-link></h3>
+						<h3 class="text-2xl">Countries</h3>
 					</span>
 					<span class="">
 						<i class="fa-solid fa-chevron-down transition-all" :class="{'rotate-180': openCountries, 'rotate-0': !openCountries}" @click="openOptions('countries')"></i>
@@ -46,7 +46,7 @@
 				<span class="flex flex-row items-center justify-between w-full">
 					<span class="flex flex-row items-center">
 						<i class="fa-solid fa-plane-departure text-xl mr-2"></i>
-						<h3 class="text-2xl"><router-link to="/destinations">Upc. Destinations</router-link></h3>
+						<h3 class="text-2xl">Upc. Destinations</h3>
 					</span>
 					<span class="">
 						<i class="fa-solid fa-chevron-down transition-all" :class="{'rotate-180': openDestinations, 'rotate-0': !openDestinations}" @click="openOptions('destinations')"></i>
@@ -61,9 +61,9 @@
 			</span>
 
 		</main>
-		<footer class="fixed bottom-0 z-10 w-2/3 h-1/10 flex justify-center items-center border-solid border-t-2 border-zinc-100 bg-custom-blue-500">
+		<!-- <footer class="fixed bottom-0 z-10 w-2/3 h-1/10 flex justify-center items-center border-solid border-t-2 border-zinc-100 bg-custom-blue-500">
 			<h1 class="font-logo text-2xl">NXTDES</h1>
-		</footer>
+		</footer> -->
   </div>
 </template>
 

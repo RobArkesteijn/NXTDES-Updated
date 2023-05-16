@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile, onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'vue-router';
 
 export default defineComponent({
@@ -147,6 +147,13 @@ export default defineComponent({
       redirectForGuest() {
         this.router.push('/home');
       }
+    },
+    mounted() {
+      onAuthStateChanged(getAuth(), (user) => {
+      if (user) {
+        this.router.push('/home');
+      }
+    });
     }
 })
 </script>

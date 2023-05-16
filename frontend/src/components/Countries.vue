@@ -39,11 +39,6 @@ export default defineComponent({
   methods: {
     openSidemenu() {
       this.isOpen = !this.isOpen;
-    },
-    firstLetterCapital(str: string) {
-      const firstLetter = str[0].toUpperCase();
-      const restOfWord = str.slice(1);
-      return `${firstLetter}${restOfWord}`;
     }
   },
 })

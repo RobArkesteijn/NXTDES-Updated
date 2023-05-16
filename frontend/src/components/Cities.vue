@@ -3,7 +3,7 @@
   <Navbar :is-open-function="openSidemenu" />
   <Sidemenu :is-open="isOpen" :is-open-function="openSidemenu" />
   <Banner />
-  <div class="min-h-[50vh]"></div>
+  <CitiesFrontPage />
   <Footer />
 </template>
 
@@ -13,6 +13,7 @@ import Foreground from './Home/Foreground.vue';
 import Navbar from './Home/Navbar.vue';
 import Sidemenu from './Home/Sidemenu.vue';
 import Banner from './Home/Banner.vue';
+import CitiesFrontPage from './CitiesFrontPage.vue';
 import Footer from './Home/Footer.vue';
 
 export default defineComponent({
@@ -21,6 +22,7 @@ export default defineComponent({
     Navbar,
     Sidemenu,
     Banner,
+    CitiesFrontPage,
     Footer
   },
   data() {
