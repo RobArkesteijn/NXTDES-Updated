@@ -45,34 +45,6 @@ export default defineComponent({
       intro: intro
     }
   },
-
-  // data() {
-  //   return {
-  //     title: '' as string,
-  //     intro: '' as string,
-  //   }
-  // },
-  // methods: {
-  //   fetchData() {
-  //     const path = this.$route.path.slice(1)
-  //     const infoRef = dataRef(db, 'cityinfo');
-  //     get(infoRef)
-  //       .then((snapshot) => {
-  //         const data = snapshot.val();
-  //         this.title = data[path].title;
-  //         this.intro = data[path].intro;
-  //       })
-  //       .catch((error) => {
-  //         console.log(error);
-  //       })
-  //   }
-  // },
-  // mounted() {
-  //   watchEffect(() => {
-  //     const path = this.$route.path.slice(1);
-  //     this.fetchData();
-  //   })
-  // },
 })
 </script>
 

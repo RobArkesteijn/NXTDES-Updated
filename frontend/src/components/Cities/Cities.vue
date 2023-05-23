@@ -1,7 +1,7 @@
 <template>
-  <Foreground :is-open="isOpen" :is-open-function="openSidemenu" />
-  <Navbar :is-open-function="openSidemenu" />
-  <Sidemenu :is-open="isOpen" :is-open-function="openSidemenu" />
+  <Foreground />
+  <Navbar />
+  <Sidemenu />
   <Banner />
   <CitiesFrontPage />
   <Footer />
@@ -25,26 +25,6 @@ export default defineComponent({
     CitiesFrontPage,
     Footer
   },
-  setup() {
-    const isOpen = ref(false);
-    function openSidemenu() {
-      isOpen.value = !isOpen.value;
-    }
-    return {
-      isOpen: isOpen,
-      openSidemenu: openSidemenu
-    }
-  },
-  // data() {
-  //   return {
-  //     isOpen: false,
-  //   }
-  // },
-  // methods: {
-  //   openSidemenu() {
-  //     this.isOpen = !this.isOpen;
-  //   }
-  // }
 })
 </script>
 

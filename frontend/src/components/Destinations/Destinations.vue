@@ -1,7 +1,7 @@
 <template>
-  <Foreground :is-open="isOpen" :is-open-function="openSidemenu"/>
-  <Navbar :is-open-function="openSidemenu"/>
-  <Sidemenu :is-open="isOpen" :is-open-function="openSidemenu"/>
+  <Foreground />
+  <Navbar />
+  <Sidemenu />
   <Banner />
   <div class="flex w-full justify-center py-4 text-xl font-text min-h-[50vh]" v-if="path !== 'destinations'">
     <h1>{{ firstLetterCapital(path) }}</h1>
@@ -30,14 +30,9 @@ export default defineComponent({
     Footer
   },
   setup() {
-    const isOpen = ref(false);
     const route = useRoute();
 
     const path = computed(() => route.path.slice(1));
-
-    function openSidemenu() {
-      isOpen.value = !isOpen.value;
-    }
 
     function firstLetterCapital(str: string) {
       const firstLetter = str[0].toUpperCase();
@@ -46,33 +41,10 @@ export default defineComponent({
     }
 
     return {
-      isOpen: isOpen,
-      openSidemenu: openSidemenu,
       firstLetterCapital: firstLetterCapital,
       path: path
     }
   },
-
-  // data() {
-  //   return {
-  //     isOpen: false,
-  //   }
-  // },
-  // computed: {
-  //   path() {
-  //     return useRoute().path.slice(1);
-  //   }
-  // },
-  // methods: {
-  //   openSidemenu() {
-  //     this.isOpen = !this.isOpen;
-  //   },
-  //   firstLetterCapital(str: string) {
-  //     const firstLetter = str[0].toUpperCase();
-  //     const restOfWord = str.slice(1);
-  //     return `${firstLetter}${restOfWord}`;
-  //   }
-  // }
 })
 </script>
 

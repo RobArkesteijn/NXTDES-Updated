@@ -1,7 +1,7 @@
 <template>
-  <Foreground :is-open="isOpen" :is-open-function="openSidemenu"/>
-  <Navbar :is-open-function="openSidemenu"/>
-  <Sidemenu :is-open="isOpen" :is-open-function="openSidemenu"/>
+  <Foreground />
+  <Navbar />
+  <Sidemenu />
   <Banner />
   <TravelInfoFrontPage />
   <Footer />
@@ -25,47 +25,6 @@ export default defineComponent({
     TravelInfoFrontPage,
     Footer
   },
-  setup() {
-    const isOpen = ref(false);
-
-    function openSidemenu() {
-      isOpen.value = !isOpen.value;
-    }
-
-    function capitalizeWords(str: string) {
-      return str
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-      }
-
-    return {
-      isOpen: isOpen,
-      openSidemenu: openSidemenu,
-      capitalizeWords: capitalizeWords
-    }
-  },
-  // data() {
-  //   return {
-  //     isOpen: false,
-  //   }
-  // },
-  // computed: {
-  //   path() {
-  //     return useRoute().path.slice(1).split('_').join(' ');
-  //   },
-  // },
-  // methods: {
-  //   openSidemenu() {
-  //     this.isOpen = !this.isOpen;
-  //   },
-  //   capitalizeWords(str: string) {
-  //     return str
-  //       .split(' ')
-  //       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-  //       .join(' ');
-  //     }
-  // }
 })
 </script>
 

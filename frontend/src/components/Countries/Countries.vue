@@ -1,7 +1,7 @@
 <template>
-  <Foreground :is-open="isOpen" :is-open-function="openSidemenu"/>
-  <Navbar :is-open-function="openSidemenu"/>
-  <Sidemenu :is-open="isOpen" :is-open-function="openSidemenu"/>
+  <Foreground />
+  <Navbar />
+  <Sidemenu />
   <Banner />
   <CountriesFrontPage />
   <Footer />
@@ -26,16 +26,6 @@ export default defineComponent({
     Footer,
   },
   setup() {
-    const isOpen = ref(false);
-
-    function openSidemenu() {
-      isOpen.value = !isOpen.value
-    }
-
-    return {
-      isOpen: isOpen,
-      openSidemenu: openSidemenu
-    }
   }
 })
 </script>

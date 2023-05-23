@@ -58,35 +58,6 @@ export default defineComponent({
       list: list
     }
   },
-  // data() {
-  //   return {
-  //     title: '' as string,
-  //     intro: '' as string,
-  //     list: null as string[] | null,
-  //   }
-  // },
-  // methods: {
-  //   fetchData() {
-  //     const path = this.$route.path.slice(1)
-  //     const infoRef = dataRef(db, 'info');
-  //     get(infoRef)
-  //       .then((snapshot) => {
-  //         const data = snapshot.val();
-  //         this.title = data[path].title;
-  //         this.intro = data[path].intro;
-  //         this.list = sortArrayAlphabetically(Object.values(data[path].list));
-  //       })
-  //       .catch((error) => {
-  //         console.log(error);
-  //       })
-  //   }
-  // },
-  // mounted() {
-  //   watchEffect(() => {
-  //     const path = this.$route.path.slice(1);
-  //     this.fetchData();
-  //   })
-  // },
 })
 </script>
 

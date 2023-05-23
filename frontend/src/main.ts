@@ -1,3 +1,4 @@
+import { createPinia } from 'pinia';
 import { createApp } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import App from './App.vue';
@@ -12,7 +13,7 @@ import { initializeApp } from "firebase/app";
 import { getDatabase, get, ref as dataRef } from 'firebase/database';
 import Notifications from '@kyvg/vue3-notification'
 
-const app = createApp(App);
+const app = createApp(App).use(createPinia());
 app.use(Notifications);
 
 const firebaseConfig = {

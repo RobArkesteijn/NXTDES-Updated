@@ -47,36 +47,6 @@ export default defineComponent({
       set(userRef, {sights: {1: 'home'}});
     }
   },
-  // data() {
-  //   return {
-  //     userList: [] as string[]
-  //   }
-  // },
-  // methods: {
-  //   fetchAndPostUser() {
-  //     const userRef = dataRef(db, 'users');
-  //     get(userRef)
-  //       .then((snapshot) => {
-  //         const data = snapshot.val();
-  //         this.userList.push(...Object.keys(data))
-  //         onAuthStateChanged(getAuth(), (user) => {
-  //           if (user && !this.userList.includes(user.email!.replace(/[.#$\[\]]/g, "_"))) {
-  //             this.postUser(user);
-  //           }
-  //         });
-  //       })
-  //       .catch((error) => {
-  //         console.log(error);
-  //       })
-  //  },
-  //  postUser(user: User) {
-  //   const userRef = dataRef(db, `users/${user.email?.replace(/[.#$\[\]]/g, "_")}`);
-  //   set(userRef, {sights: {1: 'home'}});
-  // }
-  // },
-  // mounted() {
-  //   this.fetchAndPostUser();
-  // },
 })
 </script>
 

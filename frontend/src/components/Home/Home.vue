@@ -1,14 +1,14 @@
 <template>
-    <Foreground :is-open="isOpen" :is-open-function="openSidemenu" />
-    <Navbar :is-open-function="openSidemenu"/>
-    <Sidemenu :is-open="isOpen" :is-open-function="openSidemenu"/>
+    <Foreground />
+    <Navbar />
+    <Sidemenu />
     <Banner />
     <FrontPage />
     <Footer />
   </template>
   
 <script lang="ts">
-  import { defineComponent, ref } from 'vue';
+  import { defineComponent } from 'vue';
   import Navbar from './Navbar.vue';
   import Sidemenu from './Sidemenu.vue';
   import Foreground from './Foreground.vue';
@@ -25,26 +25,6 @@
       FrontPage,
       Footer
     },
-    setup() {
-      const isOpen = ref(false);
-      function openSidemenu() {
-        isOpen.value = !isOpen.value;
-      }
-      return {
-        isOpen: isOpen,
-        openSidemenu: openSidemenu
-      }
-    },
-    // data() {
-    //   return {
-    //     isOpen: false,
-    //   }
-    // },
-    // methods: {
-    //   openSidemenu() {
-    //       this.isOpen = !this.isOpen;
-    //   }
-    // },
   });
 </script>
   
