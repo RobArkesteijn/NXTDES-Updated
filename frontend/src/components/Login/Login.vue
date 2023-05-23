@@ -32,129 +32,272 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, onBeforeMount } from 'vue'
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile, onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'vue-router';
+import { useNotification } from '@kyvg/vue3-notification';
+
 
 export default defineComponent({
-    data() {
-      return {
-        router: useRouter(),
-        name: ref(''),
-        email: ref(''),
-        password: ref(''),
-        errMsg: ref(),
-        buttonType: 'Login',
-        changeText: "Don't have an account?",
-        changeButton: 'Sign Up'
-      }
-    },
-    methods: {
-      changeButtonType() {
-        if (this.changeButton === 'Sign Up') {
-          this.buttonType = 'Sign Up';
-          this.changeText = 'Already have an account?';
-          this.changeButton = 'Login';
-        } else {
-          this.buttonType = 'Login';
-          this.changeText = "Don't have an account?";
-          this.changeButton = 'Sign Up';
+  setup() {
+    const router = useRouter();
+    const name = ref('');
+    const email = ref('');
+    const password = ref('');
+    const errMsg = ref('');
+    const buttonType = ref('Login');
+    const changeText = ref("Don't have an account?")
+    const changeButton = ref('Sign up');
+    const { notify } = useNotification();
+
+    onBeforeMount(() => {
+      const auth = getAuth();
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          router.push('/home');
         }
-      },
-      register(event: MouseEvent) {
-        event.preventDefault();
+      });
+    });
+
+    function changeButtonType() {
+      if (changeButton.value === 'Sign Up') {
+          buttonType.value = 'Sign Up';
+          changeText.value = 'Already have an account?';
+          changeButton.value = 'Login';
+        } else {
+          buttonType.value = 'Login';
+          changeText.value = "Don't have an account?";
+          changeButton.value = 'Sign Up';
+        }
+    };
+
+    function register(event: MouseEvent) {
+      event.preventDefault();
         const auth = getAuth()
-        createUserWithEmailAndPassword(auth, this.email, this.password)
+        createUserWithEmailAndPassword(auth, email.value, password.value)
           .then((userCredential) => {
             const user = userCredential.user;
-            return updateProfile(user, { displayName: this.name })
+            return updateProfile(user, { displayName: name.value })
           })
           .then((data) => {
             console.log('Succesfully registered');
             console.log(auth.currentUser);
-            console.log(auth.currentUser?.displayName);
-            this.router.push('/home');
+            router.push('/home');
+            notify({ type: 'success', text: 'Registered Successfully'});
           })
           .catch((error) => {
             console.log(error);
             switch (error.code) {
               case "auth/invalid-email":
-                this.errMsg = "Invalid email";
+                errMsg.value = "Invalid email";
                 break;
               case "auth/user-not-found":
-                this.errMsg = "No account with that email was found";
+                errMsg.value = "No account with that email was found";
                 break;
               case "auth/wrong-password":
-                this.errMsg = "Incorrect password";
+                errMsg.value = "Incorrect password";
                 break; 
               case "auth/user-disabled":
-                this.errMsg = "Email or password was incorrect";
+                errMsg.value = "Email or password was incorrect";
                 break;
               case "auth/email-already-in-use":
-                this.errMsg = "This email already has an account"
+                errMsg.value = "This email already has an account"
                 break;
               case "auth/weak-password":
-                this.errMsg = "Password should be at least six characters"
-                break;    
+                errMsg.value = "Password should be at least six characters"
+                break;
             }
-          })
-      },
-      login(event: MouseEvent) {
-        event.preventDefault();
+        });
+      };
+
+    function login(event: MouseEvent) {
+      event.preventDefault();
         const auth = getAuth();
-        signInWithEmailAndPassword(auth, this.email, this.password)
+        signInWithEmailAndPassword(auth, email.value, password.value)
           .then((data) => {
             console.log('Succesfully logged in');
             console.log(auth.currentUser);
-            this.router.push('/home');
+            router.push('/home');
+            notify({ type: 'success', text: 'Logged In Successfully'});
           })
           .catch((error) => {
             console.log(error);
             switch (error.code) {
               case "auth/invalid-email":
-                this.errMsg = "Invalid email";
+                errMsg.value = "Invalid email";
                 break;
               case "auth/user-not-found":
-                this.errMsg = "No account with that email was found";
+                errMsg.value = "No account with that email was found";
                 break;
               case "auth/wrong-password":
-                this.errMsg = "Incorrect password";
+                errMsg.value = "Incorrect password";
                 break; 
               case "auth/user-disabled":
-                this.errMsg = "Email or password was incorrect";
+                errMsg.value = "Email or password was incorrect";
                 break;   
             }
-          })
-      },
-      registerOrLogin(event: MouseEvent) {
-        if (this.buttonType === 'Login') {
-          this.login(event);
-        } else {
-          this.register(event);
-        }
-      },
-      signInWithGoogle() {
-        const provider = new GoogleAuthProvider();
-        signInWithPopup(getAuth(), provider)
-          .then((result) => {
-            console.log(result.user);
-            this.router.push('/home');
-          })
-          .catch((error) => {
-            console.log(error);
-          })
-      },
-      redirectForGuest() {
-        this.router.push('/home');
+          });
+    };
+
+    function registerOrLogin(event: MouseEvent) {
+      if (buttonType.value === 'Login') {
+        login(event);
+      } else {
+        register(event);
       }
-    },
-    mounted() {
-      onAuthStateChanged(getAuth(), (user) => {
-      if (user) {
-        this.router.push('/home');
-      }
-    });
+    };
+
+    function signInWithGoogle() {
+      const provider = new GoogleAuthProvider();
+      signInWithPopup(getAuth(), provider)
+        .then((result) => {
+          console.log(result.user);
+          router.push('/home');
+          notify({ type: 'success', text: 'Logged In Successfully'});
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+    };
+
+    function redirectForGuest() {
+      router.push('/home');
     }
+
+    return {
+      name: name,
+      email: email,
+      password: password,
+      errMsg: errMsg,
+      buttonType: buttonType,
+      changeText: changeText,
+      changeButton: changeButton,
+      registerOrLogin: registerOrLogin,
+      changeButtonType: changeButtonType,
+      signInWithGoogle: signInWithGoogle,
+      redirectForGuest: redirectForGuest
+    }
+  },
+    // data() {
+    //   return {
+    //     router: useRouter(),
+    //     name: ref(''),
+    //     email: ref(''),
+    //     password: ref(''),
+    //     errMsg: ref(),
+    //     buttonType: 'Login',
+    //     changeText: "Don't have an account?",
+    //     changeButton: 'Sign Up'
+    //   }
+    // },
+    // methods: {
+    //   changeButtonType() {
+    //     if (this.changeButton === 'Sign Up') {
+    //       this.buttonType = 'Sign Up';
+    //       this.changeText = 'Already have an account?';
+    //       this.changeButton = 'Login';
+    //     } else {
+    //       this.buttonType = 'Login';
+    //       this.changeText = "Don't have an account?";
+    //       this.changeButton = 'Sign Up';
+    //     }
+    //   },
+    //   register(event: MouseEvent) {
+    //     event.preventDefault();
+    //     const auth = getAuth()
+    //     createUserWithEmailAndPassword(auth, this.email, this.password)
+    //       .then((userCredential) => {
+    //         const user = userCredential.user;
+    //         return updateProfile(user, { displayName: this.name })
+    //       })
+    //       .then((data) => {
+    //         console.log('Succesfully registered');
+    //         console.log(auth.currentUser);
+    //         this.router.push('/home');
+    //         this.$notify({ type: 'success', text: 'Registered Successfully'});
+    //       })
+    //       .catch((error) => {
+    //         console.log(error);
+    //         switch (error.code) {
+    //           case "auth/invalid-email":
+    //             this.errMsg = "Invalid email";
+    //             break;
+    //           case "auth/user-not-found":
+    //             this.errMsg = "No account with that email was found";
+    //             break;
+    //           case "auth/wrong-password":
+    //             this.errMsg = "Incorrect password";
+    //             break; 
+    //           case "auth/user-disabled":
+    //             this.errMsg = "Email or password was incorrect";
+    //             break;
+    //           case "auth/email-already-in-use":
+    //             this.errMsg = "This email already has an account"
+    //             break;
+    //           case "auth/weak-password":
+    //             this.errMsg = "Password should be at least six characters"
+    //             break;
+    //         }
+    //       })
+    //   },
+    //   login(event: MouseEvent) {
+    //     event.preventDefault();
+    //     const auth = getAuth();
+    //     signInWithEmailAndPassword(auth, this.email, this.password)
+    //       .then((data) => {
+    //         console.log('Succesfully logged in');
+    //         console.log(auth.currentUser);
+    //         this.router.push('/home');
+    //         this.$notify({ type: 'success', text: 'Logged In Successfully'});
+    //       })
+    //       .catch((error) => {
+    //         console.log(error);
+    //         switch (error.code) {
+    //           case "auth/invalid-email":
+    //             this.errMsg = "Invalid email";
+    //             break;
+    //           case "auth/user-not-found":
+    //             this.errMsg = "No account with that email was found";
+    //             break;
+    //           case "auth/wrong-password":
+    //             this.errMsg = "Incorrect password";
+    //             break; 
+    //           case "auth/user-disabled":
+    //             this.errMsg = "Email or password was incorrect";
+    //             break;   
+    //         }
+    //       })
+    //   },
+    //   registerOrLogin(event: MouseEvent) {
+    //     if (this.buttonType === 'Login') {
+    //       this.login(event);
+    //     } else {
+    //       this.register(event);
+    //     }
+    //   },
+    //   signInWithGoogle() {
+    //     const provider = new GoogleAuthProvider();
+    //     signInWithPopup(getAuth(), provider)
+    //       .then((result) => {
+    //         console.log(result.user);
+    //         this.router.push('/home');
+    //         this.$notify({ type: 'success', text: 'Logged In Successfully'});
+    //       })
+    //       .catch((error) => {
+    //         console.log(error);
+    //       })
+    //   },
+    //   redirectForGuest() {
+    //     this.router.push('/home');
+    //   }
+    // },
+    // mounted() {
+    //   onAuthStateChanged(getAuth(), (user) => {
+    //   if (user) {
+    //     this.router.push('/home');
+    //   }
+    // });
+    // }
 })
 </script>
 

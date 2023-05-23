@@ -3,13 +3,17 @@ import { createRouter, createWebHistory } from 'vue-router';
 import App from './App.vue';
 import Home from './components/Home/Home.vue';
 import Login from './components/Login/Login.vue';
-import TravelInfo from './components/TravelInfo.vue';
-import Destinations from './components/Destinations.vue';
-import Countries from './components/Countries.vue';
-import Cities from './components/Cities.vue';
+import TravelInfo from './components/TravelInfo/TravelInfo.vue';
+import Destinations from './components/Destinations/Destinations.vue';
+import Countries from './components/Countries/Countries.vue';
+import Cities from './components/Cities/Cities.vue';
 import './assets/tailwind.css'
 import { initializeApp } from "firebase/app";
 import { getDatabase, get, ref as dataRef } from 'firebase/database';
+import Notifications from '@kyvg/vue3-notification'
+
+const app = createApp(App);
+app.use(Notifications);
 
 const firebaseConfig = {
   apiKey: "AIzaSyCCZJkv-2SlOrpefwE42iVsnWu2XZeYW5Q",
@@ -125,7 +129,7 @@ get(infoRef)
       history: createWebHistory(),
       routes,
     });
-    createApp(App).use(router).mount('#app');
+    app.use(router).mount('#app');
     return cities;
   })
   .catch((error) => {

@@ -8,13 +8,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useRoute } from 'vue-router';
-import Navbar from './Home/Navbar.vue';
-import Sidemenu from './Home/Sidemenu.vue';
-import Foreground from './Home/Foreground.vue';
-import Banner from './Home/Banner.vue';
-import Footer from './Home/Footer.vue';
+import { defineComponent, ref } from 'vue';
+import Navbar from '../Home/Navbar.vue';
+import Sidemenu from '../Home/Sidemenu.vue';
+import Foreground from '../Home/Foreground.vue';
+import Banner from '../Home/Banner.vue';
+import Footer from '../Home/Footer.vue';
 import CountriesFrontPage from './CountriesFrontPage.vue';
 
 export default defineComponent({
@@ -26,21 +25,18 @@ export default defineComponent({
     CountriesFrontPage,
     Footer,
   },
-  data() {
+  setup() {
+    const isOpen = ref(false);
+
+    function openSidemenu() {
+      isOpen.value = !isOpen.value
+    }
+
     return {
-      isOpen: false,
+      isOpen: isOpen,
+      openSidemenu: openSidemenu
     }
-  },
-  computed: {
-    path() {
-      return useRoute().path.slice(1);
-    }
-  },
-  methods: {
-    openSidemenu() {
-      this.isOpen = !this.isOpen;
-    }
-  },
+  }
 })
 </script>
 

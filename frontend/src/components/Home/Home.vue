@@ -8,7 +8,7 @@
   </template>
   
 <script lang="ts">
-  import { defineComponent } from 'vue';
+  import { defineComponent, ref } from 'vue';
   import Navbar from './Navbar.vue';
   import Sidemenu from './Sidemenu.vue';
   import Foreground from './Foreground.vue';
@@ -25,16 +25,26 @@
       FrontPage,
       Footer
     },
-    data() {
+    setup() {
+      const isOpen = ref(false);
+      function openSidemenu() {
+        isOpen.value = !isOpen.value;
+      }
       return {
-        isOpen: false,
+        isOpen: isOpen,
+        openSidemenu: openSidemenu
       }
     },
-    methods: {
-      openSidemenu() {
-          this.isOpen = !this.isOpen;
-      }
-    }
+    // data() {
+    //   return {
+    //     isOpen: false,
+    //   }
+    // },
+    // methods: {
+    //   openSidemenu() {
+    //       this.isOpen = !this.isOpen;
+    //   }
+    // },
   });
 </script>
   

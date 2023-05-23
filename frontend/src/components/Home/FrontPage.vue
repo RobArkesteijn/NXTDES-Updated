@@ -12,10 +12,71 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue';
+import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
+import { get, ref as dataRef, set } from 'firebase/database';
+import { db } from '@/main';
 
 export default defineComponent({
-   
+  setup() {
+    const userList = ref<string[]>([]);
+
+    onMounted(() => {
+      fetchAndPostUser();
+    })
+
+    function fetchAndPostUser() {
+      const userRef = dataRef(db, 'users');
+      get(userRef)
+        .then((snapshot) => {
+          const data = snapshot.val();
+          userList.value.push(...Object.keys(data))
+          onAuthStateChanged(getAuth(), (user) => {
+            if (user && !userList.value.includes(user.email!.replace(/[.#$\[\]]/g, "_"))) {
+              postUser(user);
+            }
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+    }
+
+    function postUser(user: User) {
+      const userRef = dataRef(db, `users/${user.email?.replace(/[.#$\[\]]/g, "_")}`);
+      set(userRef, {sights: {1: 'home'}});
+    }
+  },
+  // data() {
+  //   return {
+  //     userList: [] as string[]
+  //   }
+  // },
+  // methods: {
+  //   fetchAndPostUser() {
+  //     const userRef = dataRef(db, 'users');
+  //     get(userRef)
+  //       .then((snapshot) => {
+  //         const data = snapshot.val();
+  //         this.userList.push(...Object.keys(data))
+  //         onAuthStateChanged(getAuth(), (user) => {
+  //           if (user && !this.userList.includes(user.email!.replace(/[.#$\[\]]/g, "_"))) {
+  //             this.postUser(user);
+  //           }
+  //         });
+  //       })
+  //       .catch((error) => {
+  //         console.log(error);
+  //       })
+  //  },
+  //  postUser(user: User) {
+  //   const userRef = dataRef(db, `users/${user.email?.replace(/[.#$\[\]]/g, "_")}`);
+  //   set(userRef, {sights: {1: 'home'}});
+  // }
+  // },
+  // mounted() {
+  //   this.fetchAndPostUser();
+  // },
 })
 </script>
 

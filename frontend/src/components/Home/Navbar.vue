@@ -21,66 +21,133 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref, onBeforeMount } from 'vue';
 import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'vue-router';
+import { useNotification } from '@kyvg/vue3-notification';
 
 export default defineComponent({
 	props: ['isOpenFunction'],
-    data() {
-      return {
-        auth: getAuth(),
-        userInfoOpen: false,
-        router: useRouter(),
-        profilePic: null as string | null,
-        lastScrollPosition: 0,
-    }
-  },
-  mounted() {
-    onAuthStateChanged(this.auth, (user) => {
-      if (user) {
-        this.profilePic = user.photoURL;
-      } else {
-        this.profilePic = null;
-      }
-    });
-    window.addEventListener('scroll', this.handleScroll);
-  },
-  methods: {
-    handleSignout() {
-      signOut(this.auth)
+  setup() {
+    const auth = getAuth();
+    const router = useRouter();
+    const userInfoOpen = ref(false);
+    const profilePic = ref<string | null>(null);
+    const lastScrollPosition = ref(0);
+    const { notify } = useNotification();
+
+    onBeforeMount(() => {
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          profilePic.value = user.photoURL;
+        } else {
+          profilePic.value = null;
+        }
+      });
+      window.addEventListener('scroll', handleScroll);
+    })
+
+    function handleSignout() {
+      signOut(auth)
         .then(() => {
-            this.router.push('/');
-            console.log('Logged out succesfully');
+            router.push('/');
+            notify({ type: 'warn', text: 'Logged Out'})
         })
         .catch((error) => {
           console.log(error);
         })
-    },
-    openUserMenu() {
-      this.userInfoOpen = !this.userInfoOpen;
-    },
-    redirectLogin() {
-      this.router.push('/');
-    },
-    handleScroll() {
+    }
+
+    function openUserMenu() {
+      userInfoOpen.value = !userInfoOpen.value
+    }
+
+    function redirectLogin() {
+      router.push('/');
+    }
+
+    function handleScroll() {
       const navbar = document.querySelector('.navbar') as HTMLDivElement;
       const navbarHeight = navbar.offsetHeight;
       const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
 
-      if (scrollPosition > this.lastScrollPosition && scrollPosition > navbarHeight) {
+      if (scrollPosition > lastScrollPosition.value && scrollPosition > navbarHeight) {
         navbar.style.transform = 'translateY(-100%)';
       } else {
         navbar.style.transform = 'translateY(0)';
       }
 
-      if(this.userInfoOpen) {
-        this.userInfoOpen = false;
+      if(userInfoOpen.value) {
+        userInfoOpen.value = false;
       }
 
-      this.lastScrollPosition = scrollPosition;
-    },
-  }
+      lastScrollPosition.value = scrollPosition;
+    }
+
+    return {
+      auth: auth,
+      profilePic: profilePic,
+      userInfoOpen: userInfoOpen,
+      openUserMenu: openUserMenu,
+      handleSignout: handleSignout,
+      redirectLogin: redirectLogin
+    }
+
+  },
+  //   data() {
+  //     return {
+  //       auth: getAuth(),
+  //       userInfoOpen: false,
+  //       router: useRouter(),
+  //       profilePic: null as string | null,
+  //       lastScrollPosition: 0,
+  //   }
+  // },
+  // mounted() {
+  //   onAuthStateChanged(this.auth, (user) => {
+  //     if (user) {
+  //       this.profilePic = user.photoURL;
+  //     } else {
+  //       this.profilePic = null;
+  //     }
+  //   });
+  //   window.addEventListener('scroll', this.handleScroll);
+  // },
+  // methods: {
+  //   handleSignout() {
+  //     signOut(this.auth)
+  //       .then(() => {
+  //           this.router.push('/');
+  //           this.$notify({ type: 'warn', text: 'Logged Out'})
+  //       })
+  //       .catch((error) => {
+  //         console.log(error);
+  //       })
+  //   },
+  //   openUserMenu() {
+  //     this.userInfoOpen = !this.userInfoOpen;
+  //   },
+  //   redirectLogin() {
+  //     this.router.push('/');
+  //   },
+  //   handleScroll() {
+  //     const navbar = document.querySelector('.navbar') as HTMLDivElement;
+  //     const navbarHeight = navbar.offsetHeight;
+  //     const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+
+  //     if (scrollPosition > this.lastScrollPosition && scrollPosition > navbarHeight) {
+  //       navbar.style.transform = 'translateY(-100%)';
+  //     } else {
+  //       navbar.style.transform = 'translateY(0)';
+  //     }
+
+  //     if(this.userInfoOpen) {
+  //       this.userInfoOpen = false;
+  //     }
+
+  //     this.lastScrollPosition = scrollPosition;
+  //   },
+  // }
 })
 </script>
 

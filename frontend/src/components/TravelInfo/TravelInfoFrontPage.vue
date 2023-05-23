@@ -20,44 +20,80 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watchEffect } from 'vue';
+import { defineComponent, computed, watchEffect, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import { get, ref as dataRef } from 'firebase/database';
 import { db } from '@/main';
 
 export default defineComponent({
-  data() {
-    return {
-      list: [] as any[],
-    }
-  },
-  methods: {
-    fetchData() {
-      const path = this.$route.path.slice(1);
-      const infoRef = dataRef(db, `travelcontent/${path}`);
+  setup() {
+    const list = ref<any[]>([]);
+    const route = useRoute();
+
+    const path = computed(() => route.path.slice(1));
+
+    watchEffect(() => {
+      fetchData();
+    });
+
+    function fetchData() {
+      const infoRef = dataRef(db, `travelcontent/${path.value}`);
       get(infoRef)
         .then((snapshot) => {
           const data = snapshot.val();
-          this.list = [];
-          this.list.push(...Object.entries(data));
+          list.value = Object.entries(data);
         })
         .catch((error) => {
           console.log(error);
-        })
-    },
-    scrollToElement(id: number) {
+        });
+    }
+
+    function scrollToElement(id: number) {
       const elementId = `item${id}`;
       const element = document.getElementById(elementId);
       if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
+        element.scrollIntoView({ behavior: 'smooth' });
       }
     }
+
+    return {
+      list,
+      scrollToElement,
+    };
   },
-  mounted() {
-    watchEffect(() => {
-      const path = this.$route.path.slice(1);
-      this.fetchData();
-    })
-  },
+  // data() {
+  //   return {
+  //     list: [] as any[],
+  //   }
+  // },
+  // methods: {
+  //   fetchData() {
+  //     const path = this.$route.path.slice(1);
+  //     const infoRef = dataRef(db, `travelcontent/${path}`);
+  //     get(infoRef)
+  //       .then((snapshot) => {
+  //         const data = snapshot.val();
+  //         this.list = [];
+  //         this.list.push(...Object.entries(data));
+  //       })
+  //       .catch((error) => {
+  //         console.log(error);
+  //       })
+  //   },
+  //   scrollToElement(id: number) {
+  //     const elementId = `item${id}`;
+  //     const element = document.getElementById(elementId);
+  //     if (element) {
+  //       element.scrollIntoView({ behavior: "smooth" });
+  //     }
+  //   }
+  // },
+  // mounted() {
+  //   watchEffect(() => {
+  //     const path = this.$route.path.slice(1);
+  //     this.fetchData();
+  //   })
+  // },
 })
 </script>
 
