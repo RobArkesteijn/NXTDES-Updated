@@ -1,9 +1,11 @@
 <template>
   <div id="banner" class="h-[30vh] overflow-hidden border-solid border-b-2 border-zinc-950 flex flex-col bg-center bg-cover bg-no-repeat">
     <span class="h-[7.5vh] w-full flex items-center justify-begin" :class="{'justify-end': $route.path.slice(1) === 'home'}">
-      <i v-if="$route.path.slice(1) !== 'home'" id="heart" class="fa-solid fa-heart text-4xl text-zinc-50 basis-full ml-1 transition-all" @click="fetchUserListAndToggleFavorite"></i>
-      <img src="../../dutch.png" alt="Dutch Language" class="h-[35px] w-auto rounded-full duration-[50ms] transition-[border] active:border-zinc-50 active:border-[2px] active:border-solid">
-      <img src="../../british.png" alt="English Language" class="h-[35px] w-auto mx-1 rounded-full duration-[50ms] transition-[border] active:border-zinc-50 active:border-[2px] active:border-solid">
+      <i v-if="$route.path.slice(1) !== 'home'" id="heart" class="fa-solid fa-heart text-4xl text-zinc-50 ml-1 transition-all" @click="fetchUserListAndToggleFavorite"></i>
+      <span class="flex basis-full justify-end">
+        <img src="../../dutch.png" alt="Dutch Language" class="h-[35px] w-auto rounded-full duration-[50ms] transition-[border] active:border-zinc-50 active:border-[2px] active:border-solid">
+        <img src="../../british.png" alt="English Language" class="h-[35px] w-auto mx-1 rounded-full duration-[50ms] transition-[border] active:border-zinc-50 active:border-[2px] active:border-solid">
+      </span>
     </span>
     <span class="h-[15vh] w-full flex items-center justify-center">
       <h2 v-if="!image" class="text-zinc-950 font-headers text-4xl font-bold">Loading...</h2>

@@ -5,6 +5,15 @@
 			<h1 v-else class="text-4xl font-bold">Welcome Guest</h1>
 		</header>
 		<main class="flex flex-col items-center">
+      <!-- Admin -->
+      <span v-if="email === 'rarkesteijn@outlook.com'" class="w-11/12 flex flex-col items-center border-solid border-zinc-100 border-b-1 py-4 bg-custom-blue-500" :class="{'z-[1]': openDestinations, 'z-0': !openDestinations}">
+				<span class="flex flex-row items-center justify-between w-full">
+					<span class="flex flex-row items-center">
+						<i class="fa-solid fa-star text-xl mr-2"></i>
+						<h3 class="text-2xl"><router-link to="/admin">Admin</router-link></h3>
+					</span>
+				</span>
+			</span>
       <!-- Travel Info -->
 			<span class="w-11/12 flex flex-col items-center border-solid border-zinc-100 border-b-1 py-4">
 				<span class="flex flex-row items-center justify-between w-full">
@@ -35,7 +44,7 @@
 					</span>
 				</span>
 				<ul id="countriesList" class="w-full pt-2 pl-4 transition-all h-0" :class="{'opacity-100 visible': openCountries, 'z-0 opacity-0 invisible': !openCountries}">
-					<span class="flex items-center pb-1 pt-3" v-for="country in countries" :key="country">
+					<span class="flex items-center pb-1 pt-3" v-for="(country, index) in countries" :key="index">
 						<i class="fa-solid fa-minus mr-2 text-xs"></i>
 						<li class="text-xl countries-item"><router-link :to="country.toLowerCase()" @click="store.openSidemenu">{{ country }}</router-link></li>
 					</span>
@@ -81,13 +90,12 @@
           </span>
 				</ul>
 			</span>
-
 		</main>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onBeforeMount, watch, onBeforeUpdate, onMounted } from 'vue';
+import { defineComponent, ref, onBeforeMount, watch } from 'vue';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { db, sortArrayAlphabetically } from '../../main';
 import { get, ref as dataRef } from 'firebase/database';
@@ -106,6 +114,7 @@ export default defineComponent({
     const openDestinations = ref(false);
     const openFavorites = ref(false);
     const userName = ref<string | undefined>(undefined);
+    const email = ref('');
     const countries = ref<string[]>([]);
     const travelinfo = ref<string[]>([]);
     const upcoming = ref<string[]>([]);
@@ -116,6 +125,7 @@ export default defineComponent({
       onAuthStateChanged(auth, (user) => {
 			  if (user) {
 			    userName.value = user.displayName?.split(' ')[0];
+          email.value = user.email!;
 			  } else {
 			  	userName.value = undefined;
 			  }
@@ -289,6 +299,7 @@ export default defineComponent({
 
     return {
       userName: userName,
+      email: email,
       travelinfo: travelinfo,
       openTravelInfo: openTravelInfo,
       openCountries: openCountries,
@@ -297,8 +308,8 @@ export default defineComponent({
       upcoming: upcoming,
       favorites: favorites,
       openFavorites: openFavorites,
+      store: store,
       openOptions: openOptions,
-      store: store
     }
   },
 })

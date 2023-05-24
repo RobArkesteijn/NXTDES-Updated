@@ -25,8 +25,6 @@ export default defineComponent({
     CountriesFrontPage,
     Footer,
   },
-  setup() {
-  }
 })
 </script>
 

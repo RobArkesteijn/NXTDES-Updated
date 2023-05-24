@@ -8,6 +8,7 @@ import TravelInfo from './components/TravelInfo/TravelInfo.vue';
 import Destinations from './components/Destinations/Destinations.vue';
 import Countries from './components/Countries/Countries.vue';
 import Cities from './components/Cities/Cities.vue';
+import Admin from './components/Admin/Admin.vue'
 import './assets/tailwind.css'
 import { initializeApp } from "firebase/app";
 import { getDatabase, get, ref as dataRef } from 'firebase/database';
@@ -54,6 +55,10 @@ const routes = [
   {
     path: '/cities',
     component: Cities
+  },
+  {
+    path: '/admin',
+    component: Admin
   }
 ];
 
