@@ -1,5 +1,5 @@
 <template>
-	<div class="w-full h-full bg-custom-blue-500 flex flex-col items-center justify-center">
+	<div class="w-full min-h-full bg-custom-blue-500 flex flex-col items-center justify-center">
 		<h1 class="font-logo text-zinc-50 text-4xl mb-2 cursor-pointer"><router-link to="/home">NXTDES</router-link></h1>
 		<AdminNav />
 		<div class="w-4/5 min-h-[40vh] bg-zinc-100 mt-2 rounded text-zinc-950 flex flex-col justify-center items-center">

@@ -6,7 +6,7 @@
   <div class="flex w-full justify-center py-4 text-xl font-text min-h-[50vh]" v-if="path !== 'destinations'">
     <h1>{{ firstLetterCapital(path) }}</h1>
   </div>
-  <div class="flex w-full justify-center py-4 text-xl font-text min-h-[80vh]" v-else>
+  <div class="flex w-full justify-center py-4 text-xl font-text min-h-[50vh]" v-else>
     <h1>This Page does not exist</h1>
   </div>
   <Footer />

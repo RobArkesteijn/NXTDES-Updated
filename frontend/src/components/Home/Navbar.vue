@@ -24,7 +24,6 @@
 import { defineComponent, ref, onBeforeMount } from 'vue';
 import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'vue-router';
-import { useNotification } from '@kyvg/vue3-notification';
 import { useStore } from '@/store/store';
 
 export default defineComponent({
@@ -34,7 +33,6 @@ export default defineComponent({
     const userInfoOpen = ref(false);
     const profilePic = ref<string | null>(null);
     const lastScrollPosition = ref(0);
-    const { notify } = useNotification();
     const store = useStore();
 
     onBeforeMount(() => {
@@ -52,7 +50,8 @@ export default defineComponent({
       signOut(auth)
         .then(() => {
             router.push('/');
-            notify({ type: 'warn', text: 'Logged Out'})
+            store.resetStore();
+            store.notify({ type: 'warn', text: 'Logged Out'})
         })
         .catch((error) => {
           console.log(error);

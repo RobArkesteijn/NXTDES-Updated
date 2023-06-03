@@ -8,43 +8,35 @@
       </span>
     </span>
     <span class="h-[15vh] w-full flex items-center justify-center">
-      <h2 v-if="!image" class="text-zinc-950 font-headers text-4xl font-bold">Loading...</h2>
-      <h1 v-if="image" class="text-zinc-50 font-headers font-bold text-4xl">{{ path }}</h1>
+      <h2 v-if="!homeStore.image" class="text-zinc-950 font-headers text-4xl font-bold">Loading...</h2>
+      <h1 v-if="homeStore.image" class="text-zinc-50 font-headers font-bold text-4xl">{{ capitalizeFirstLetters(store.path.split('_').join(' ')) }}</h1>
     </span>
     <span class="h-[7.5vh]"></span>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, watchEffect, ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { defineComponent, watchEffect, onMounted, computed } from 'vue';
 import { getStorage, getDownloadURL, ref as storageRef } from 'firebase/storage';
 import { firebaseApp, capitalizeFirstLetters, db } from '@/main';
 import { get, ref as dataRef, set, remove } from 'firebase/database';
-import { getAuth, User, onAuthStateChanged } from 'firebase/auth';
-import { useNotification } from '@kyvg/vue3-notification';
+import { User } from 'firebase/auth';
+import { useStore } from '@/store/store';
+import { useHomeStore } from '@/store/homeStore';
 
 export default defineComponent({
   setup() {
-    const image = ref('');
-    const list = ref<string[]>([]);
-    const indexList = ref<any[]>([]);
-    const route = useRoute();
-    const { notify } = useNotification();
+    const store = useStore();
+    const homeStore = useHomeStore();
 
-    const path = computed(() => capitalizeFirstLetters(route.path.slice(1).split('_').join(' ')));
+    const isLoggedIn = computed(() => store.user !== null);
 
     onMounted(() => {
       watchEffect(() => {
-        const path = route.path.slice(1);
-        fetchImage(path);
-        onAuthStateChanged(getAuth(), (user) => {
-			    if (user) {
-			    	isFavoriteCheck(path, user)
-			    } else {
-			    	console.log('User is not logged in')
-			    }
-		    });
+        fetchImage(store.path);
+        if (isLoggedIn.value) {
+          isFavoriteCheck(store.path, store.user!);
+        }
       })
     })
 
@@ -54,51 +46,50 @@ export default defineComponent({
       const storageRefVariable = storageRef(storage, `${path}.webp`);
       getDownloadURL(storageRefVariable)
         .then((url) => {
-          image.value = url;
+          homeStore.image = url;
           banner.style.backgroundImage = `url(${url})`;
         })
         .catch((error) => {
-          image.value = '';
+          homeStore.image = '';
           console.log(error);
         });
     }
 
     function fetchUserListAndToggleFavorite() {
       const heart = document.getElementById('heart') as HTMLElement;
-      const path = route.path.slice(1);
-      const user = getAuth().currentUser?.email?.replace(/[.#$\[\]]/g, "_");
+      const user = store.user!.email?.replace(/[.#$\[\]]/g, "_");
       if (user) {
         const userRef = dataRef(db, `users/${user}/sights`);
         get(userRef)
           .then((snapshot) => {
             const data = snapshot.val();
-            list.value = Object.values(data);
-            indexList.value = Object.keys(data);
-            const indexOfElement = list.value.indexOf(path);
-            const indexNumber = indexList.value[indexOfElement];
-            const newIdNumber = Number(indexList.value.at(-1)) + 1;
-            if (!list.value.includes(path)) {
+            homeStore.list = Object.values(data);
+            homeStore.indexList = Object.keys(data);
+            const indexOfElement = homeStore.list.indexOf(store.path);
+            const indexNumber = homeStore.indexList[indexOfElement];
+            const newIdNumber = Number(homeStore.indexList.at(-1)) + 1;
+            if (!homeStore.list.includes(store.path)) {
               heart.classList.add('active');
               addToList(newIdNumber);
-              notify({ type: 'success', text: 'Added to list'});
+              store.notify({ type: 'success', text: 'Added to list'});
             } else {
               heart.classList.remove('active');
               deleteFromList(indexNumber);
-              notify({ type: 'warn', text: 'Removed from list'});
+              store.notify({ type: 'warn', text: 'Removed from list'});
             }
           })
           .catch((error) => {
             console.log(error);
           })
       } else {
-        notify({ type: 'info', text: 'Please log in to add this Destination to your list'});
+        store.notify({ type: 'info', text: 'Please log in to add this Destination to your list'});
       }
     }
 
     function addToList(index: number) {
-        const user = getAuth().currentUser?.email?.replace(/[.#$\[\]]/g, "_");
+        const user = store.user!.email?.replace(/[.#$\[\]]/g, "_");
         const userRef = dataRef(db, `users/${user}/sights/${index}`);
-        set(userRef, `${route.path.slice(1)}`)
+        set(userRef, `${store.path}`)
           .then(() => {
             console.log('Data successfully added');
           })
@@ -108,7 +99,7 @@ export default defineComponent({
     }
 
     function deleteFromList(index: number) {
-      const user = getAuth().currentUser?.email?.replace(/[.#$\[\]]/g, "_");
+      const user = store.user!.email?.replace(/[.#$\[\]]/g, "_");
       const userRef = dataRef(db, `users/${user}/sights/${index}`);
       remove(userRef)
         .then(() => {
@@ -132,8 +123,6 @@ export default defineComponent({
             } else {
               heart.classList.remove('active');
             }
-          } else {
-            // console.log('countries', 'No data available');
           }
         })
         .catch((error) => {
@@ -143,8 +132,9 @@ export default defineComponent({
 
     return {
       fetchUserListAndToggleFavorite: fetchUserListAndToggleFavorite,
-      image: image,
-      path: path
+      capitalizeFirstLetters: capitalizeFirstLetters,
+      homeStore: homeStore,
+      store: store
     }
   },
 })

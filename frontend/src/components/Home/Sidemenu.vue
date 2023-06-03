@@ -100,6 +100,7 @@ import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { db, sortArrayAlphabetically } from '../../main';
 import { get, ref as dataRef } from 'firebase/database';
 import { useStore } from '@/store/store';
+import { useHomeStore } from '@/store/homeStore';
 
 interface Data{
   id: number;
@@ -120,6 +121,7 @@ export default defineComponent({
     const upcoming = ref<string[]>([]);
     const favorites = ref<string[]>([]);
     const store = useStore();
+    const homeStore = useHomeStore();
 
     onBeforeMount(() => {
       onAuthStateChanged(auth, (user) => {
@@ -139,7 +141,7 @@ export default defineComponent({
       calculateTravelInfoListHeight();
     })
 
-    watch(openFavorites, async () => {
+    watch(homeStore.list, async () => {
       if (auth.currentUser) {
         await fetchFavorites(auth.currentUser);
       }

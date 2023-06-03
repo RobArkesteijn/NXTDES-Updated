@@ -36,7 +36,7 @@ export default defineComponent({
       const file = fileInput.value.files[0];
 
       if (file) {
-        const storageReference = storageRef(storage, adminStore.fileName || file.name);
+        const storageReference = storageRef(storage, `${adminStore.fileName}.webp`  || file.name);
         uploadBytes(storageReference, file)
           .then((snapshot) => {
             notify({ type: 'success', text: 'Image uploaded successfully'});

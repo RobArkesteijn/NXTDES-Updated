@@ -4,107 +4,90 @@
     <h2 class="font-headers text-2xl mb-2">travelling, history, culture, city & nature</h2>
     <div class="w-4/5 min-h-[40vh] bg-zinc-100 mt-2 rounded text-zinc-950 flex flex-col justify-center items-center">
         <form class="flex flex-col items-center font-text font-light">
-          <span v-if="buttonType === 'Sign Up'" class="flex flex-col items-center py-2">
+          <span v-if="loginStore.signInType === 'Sign Up'" class="flex flex-col items-center py-2">
             <label for="name">Name</label>
-            <input type="text" placeholder="Name" id="name" v-model="name" class="px-1">
+            <input type="text" placeholder="Name" id="name" v-model="loginStore.name" class="px-1">
           </span>
           <span class="flex flex-col items-center py-2">
             <label for="email">Email</label>
-            <input type="text" placeholder="Email" id="email" v-model="email" class="px-1">
+            <input type="text" placeholder="Email" id="email" v-model="loginStore.email" class="px-1">
           </span>
           <span class="flex flex-col items-center py-2">
             <label for="password">Password</label>
-            <input type="password" placeholder="Password" id="password" v-model="password" class="px-1">
+            <input type="password" placeholder="Password" id="password" v-model="loginStore.password" class="px-1">
           </span>
-          <p v-if="errMsg" class="text-red-600">{{ errMsg }}</p> 
+          <p v-if="loginStore.errMsg" class="text-red-600">{{ loginStore.errMsg }}</p> 
           <span class="flex flex-col items-center pt-2 pb-4">
-            <button type="submit" class="py-1 bg-custom-blue-500 px-16 text-zinc-50 rounded" @click="registerOrLogin">{{buttonType}}</button>
+            <button type="submit" class="py-1 bg-custom-blue-500 px-16 text-zinc-50 rounded" @click="registerOrLogin">{{loginStore.signInType}}</button>
           </span>
         </form>
         <button class="bg-custom-blue-500 px-4 py-2 text-zinc-50 rounded mb-4" @click="signInWithGoogle"><i class="fa-brands fa-google mr-2"></i>Sign In With Google</button>
     </div>
     <span class="flex mt-2">
-      <p class="mr-1">{{changeText}}</p>
-      <p class="ml-1 underline" @click="changeButtonType">{{changeButton}}</p>
+      <p class="mr-1">{{loginStore.signInReferral}}</p>
+      <p class="ml-1 underline" @click="loginStore.changeTypeOfSignIn">{{loginStore.changeSignInType}}</p>
     </span>
     <button class="mt-4 bg-zinc-100 py-1 px-4 rounded text-zinc-950 text-2xl font-bold font-headers" @click="redirectForGuest">Enter as guest</button>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onBeforeMount } from 'vue'
+import { defineComponent, computed, watch } from 'vue'
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile, onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'vue-router';
-import { useNotification } from '@kyvg/vue3-notification';
+import { useLoginStore } from '@/store/loginStore';
+import { useStore } from '@/store/store';
 
 
 export default defineComponent({
   setup() {
     const router = useRouter();
-    const name = ref('');
-    const email = ref('');
-    const password = ref('');
-    const errMsg = ref('');
-    const buttonType = ref('Login');
-    const changeText = ref("Don't have an account?")
-    const changeButton = ref('Sign up');
-    const { notify } = useNotification();
+    const loginStore = useLoginStore();
+    const store = useStore();
 
-    onBeforeMount(() => {
-      const auth = getAuth();
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          router.push('/home');
-        }
-      });
-    });
+    const isLoggedIn = computed(() => store.user !== null);
 
-    function changeButtonType() {
-      if (changeButton.value === 'Sign Up') {
-          buttonType.value = 'Sign Up';
-          changeText.value = 'Already have an account?';
-          changeButton.value = 'Login';
-        } else {
-          buttonType.value = 'Login';
-          changeText.value = "Don't have an account?";
-          changeButton.value = 'Sign Up';
-        }
-    };
+    watch(isLoggedIn, () => {
+      if (isLoggedIn.value) {
+        router.push('/home');
+      }
+      console.log(isLoggedIn.value);
+    })
 
     function register(event: MouseEvent) {
       event.preventDefault();
         const auth = getAuth()
-        createUserWithEmailAndPassword(auth, email.value, password.value)
+        createUserWithEmailAndPassword(auth, loginStore.email, loginStore.password)
           .then((userCredential) => {
             const user = userCredential.user;
-            return updateProfile(user, { displayName: name.value })
+            return updateProfile(user, { displayName: loginStore.name })
           })
           .then((data) => {
             console.log('Succesfully registered');
-            console.log(auth.currentUser);
             router.push('/home');
-            notify({ type: 'success', text: 'Registered Successfully'});
+            loginStore.resetLoginState();
+            store.notify({ type: 'success', text: 'Registered Successfully'});
           })
           .catch((error) => {
             console.log(error);
             switch (error.code) {
               case "auth/invalid-email":
-                errMsg.value = "Invalid email";
+                loginStore.errMsg = "Invalid email";
                 break;
               case "auth/user-not-found":
-                errMsg.value = "No account with that email was found";
+                loginStore.errMsg = "No account with that email was found";
                 break;
               case "auth/wrong-password":
-                errMsg.value = "Incorrect password";
+                loginStore.errMsg = "Incorrect password";
                 break; 
               case "auth/user-disabled":
-                errMsg.value = "Email or password was incorrect";
+                loginStore.errMsg = "Email or password was incorrect";
                 break;
               case "auth/email-already-in-use":
-                errMsg.value = "This email already has an account"
+                loginStore.errMsg = "This email already has an account"
                 break;
               case "auth/weak-password":
-                errMsg.value = "Password should be at least six characters"
+                loginStore.errMsg = "Password should be at least six characters"
                 break;
             }
         });
@@ -113,34 +96,34 @@ export default defineComponent({
     function login(event: MouseEvent) {
       event.preventDefault();
         const auth = getAuth();
-        signInWithEmailAndPassword(auth, email.value, password.value)
+        signInWithEmailAndPassword(auth, loginStore.email, loginStore.password)
           .then((data) => {
             console.log('Succesfully logged in');
-            console.log(auth.currentUser);
             router.push('/home');
-            notify({ type: 'success', text: 'Logged In Successfully'});
+            loginStore.resetLoginState();
+            store.notify({ type: 'success', text: 'Logged In Successfully'});
           })
           .catch((error) => {
             console.log(error);
             switch (error.code) {
               case "auth/invalid-email":
-                errMsg.value = "Invalid email";
+                loginStore.errMsg = "Invalid email";
                 break;
               case "auth/user-not-found":
-                errMsg.value = "No account with that email was found";
+                loginStore.errMsg = "No account with that email was found";
                 break;
               case "auth/wrong-password":
-                errMsg.value = "Incorrect password";
+                loginStore.errMsg = "Incorrect password";
                 break; 
               case "auth/user-disabled":
-                errMsg.value = "Email or password was incorrect";
+                loginStore.errMsg = "Email or password was incorrect";
                 break;   
             }
           });
     };
 
     function registerOrLogin(event: MouseEvent) {
-      if (buttonType.value === 'Login') {
+      if (loginStore.signInType === 'Login') {
         login(event);
       } else {
         register(event);
@@ -153,7 +136,8 @@ export default defineComponent({
         .then((result) => {
           console.log(result.user);
           router.push('/home');
-          notify({ type: 'success', text: 'Logged In Successfully'});
+          loginStore.resetLoginState();
+          store.notify({ type: 'success', text: 'Logged In Successfully'});
         })
         .catch((error) => {
           console.log(error);
@@ -162,18 +146,12 @@ export default defineComponent({
 
     function redirectForGuest() {
       router.push('/home');
+      loginStore.resetLoginState();
     }
 
     return {
-      name: name,
-      email: email,
-      password: password,
-      errMsg: errMsg,
-      buttonType: buttonType,
-      changeText: changeText,
-      changeButton: changeButton,
+      loginStore: loginStore,
       registerOrLogin: registerOrLogin,
-      changeButtonType: changeButtonType,
       signInWithGoogle: signInWithGoogle,
       redirectForGuest: redirectForGuest
     }

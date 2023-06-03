@@ -11,7 +11,7 @@
     </span>
     <span class="flex flex-col items-center py-2">
       <label for="intro">Intro</label>
-      <textarea placeholder="Intro" id="intro" v-model="adminStore.intro" rows="10" cols="35" class="px-1"></textarea>
+      <textarea placeholder="Intro" id="intro" v-model="adminStore.intro" rows="10" cols="30" class="px-1"></textarea>
     </span>
     <span class="flex flex-col items-center pt-2 pb-4">
       <button @click="postCity(adminStore.city, adminStore.title, adminStore.intro)" class="py-1 bg-custom-blue-500 px-16 text-zinc-50 rounded">Submit</button>
